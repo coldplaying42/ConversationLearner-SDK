@@ -1,5 +1,8 @@
 # ConversationLearner-SDK
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/Microsoft/ConversationLearner-SDK.svg)](https://greenkeeper.io/)
+
+
 Conversation Learner Software Development Kit
 
 This repo is intended to be consumed by your bot. The library exposes middleware which can be used within [BotBuilder](https://github.com/Microsoft/botbuilder-js) message pipeline.  The SDK runs a server and the middleware communicates with it while processing messages which enables the Conversation Learner track the bot's state/memory and reply with messages, adaptive cards, and more.
