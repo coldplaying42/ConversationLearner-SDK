@@ -850,7 +850,7 @@ export class CLRunner {
         let actionResult: IActionResult
         let app: CLM.AppBase | null = null
         let sessionId: string | null = null
-        let replayError: CLM.ReplayError | undefined = undefined
+        let replayError: CLM.ReplayError | undefined
         const inTeach = clData !== null
         switch (clRecognizeResult.scoredAction.actionType) {
             case CLM.ActionTypes.TEXT: {
@@ -1065,7 +1065,7 @@ export class CLRunner {
             // Invoke Logic part of callback
             const renderedLogicArgumentValues = this.GetRenderedArguments(callback.logicArguments, apiAction.logicArguments, filledEntityMap)
             const memoryManager = await this.CreateMemoryManagerAsync(clMemory, allEntities)
-            let replayError: CLM.ReplayError | undefined = undefined
+            let replayError: CLM.ReplayError | undefined
 
             // If we're only doing the render part, used stored values
             // This happens when replaying dialog to recreated action outputs
@@ -1509,7 +1509,7 @@ export class CLRunner {
 
         let excludedEntities = entities.filter(e => e.doNotMemorize).map(e => e.entityId)
         let activities: Partial<BB.Activity>[] = []
-        let replayError: CLM.ReplayError | undefined = undefined
+        let replayError: CLM.ReplayError | undefined
         let replayErrors: CLM.ReplayError[] = [];
         let curAction = null
 

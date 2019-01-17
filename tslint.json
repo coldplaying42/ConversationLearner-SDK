@@ -21,7 +21,6 @@
         "no-string-based-set-interval": true,
         "no-string-based-set-timeout": true,
         "no-eval": true,
-        "no-unnecessary-initializer": false,
         "no-backbone-get-set-outside-model": false,
         "cyclomatic-complexity": false,
         "export-name": false,
