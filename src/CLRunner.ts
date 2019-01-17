@@ -850,7 +850,7 @@ export class CLRunner {
         let actionResult: IActionResult
         let app: CLM.AppBase | null = null
         let sessionId: string | null = null
-        let replayError: CLM.ReplayError | null = null
+        let replayError: CLM.ReplayError | undefined = undefined
         const inTeach = clData !== null
         switch (clRecognizeResult.scoredAction.actionType) {
             case CLM.ActionTypes.TEXT: {
@@ -932,7 +932,7 @@ export class CLRunner {
         }
         if (actionResult.response && typeof actionResult.response !== 'string' && clData) {
             actionResult.response.channelData = {
-                ...actionResult.response.channelData, clData: { ...clData, replayError: replayError || undefined }
+                ...actionResult.response.channelData, clData: { ...clData, replayError }
             }
         }
 
@@ -1065,7 +1065,7 @@ export class CLRunner {
             // Invoke Logic part of callback
             const renderedLogicArgumentValues = this.GetRenderedArguments(callback.logicArguments, apiAction.logicArguments, filledEntityMap)
             const memoryManager = await this.CreateMemoryManagerAsync(clMemory, allEntities)
-            let replayError: CLM.ReplayError | null = null
+            let replayError: CLM.ReplayError | undefined = undefined
 
             // If we're only doing the render part, used stored values
             // This happens when replaying dialog to recreated action outputs
@@ -1106,7 +1106,7 @@ export class CLRunner {
                 return {
                     logicResult,
                     response: null,
-                    replayError: replayError || undefined
+                    replayError
                 }
             }
             else {
@@ -1136,7 +1136,7 @@ export class CLRunner {
                 return {
                     logicResult,
                     response,
-                    replayError: replayError || undefined
+                    replayError
                 }
             }
         }
@@ -1509,7 +1509,7 @@ export class CLRunner {
 
         let excludedEntities = entities.filter(e => e.doNotMemorize).map(e => e.entityId)
         let activities: Partial<BB.Activity>[] = []
-        let replayError: CLM.ReplayError | null = null
+        let replayError: CLM.ReplayError | undefined = undefined
         let replayErrors: CLM.ReplayError[] = [];
         let curAction = null
 
@@ -1517,7 +1517,7 @@ export class CLRunner {
             let filledEntities = round.scorerSteps[0] && round.scorerSteps[0].input ? round.scorerSteps[0].input.filledEntities : []
 
             // VALIDATION
-            replayError = null
+            replayError = undefined
 
             // Check that non-multivalue isn't labelled twice
             for (let tv of round.extractorStep.textVariations) {
@@ -1599,7 +1599,7 @@ export class CLRunner {
                     let scoreFilledEntities = scorerStep.input.filledEntities
 
                     // VALIDATION
-                    replayError = null
+                    replayError = undefined
 
                     // Check that action exists
                     let selectedAction = actions.find(a => a.actionId == labelAction)
