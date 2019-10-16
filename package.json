@@ -58,7 +58,8 @@
     "tslib": "^1.5.0",
     "typedoc": "^0.15.0",
     "url": "0.11.0",
-    "xmldom": "^0.1.27"
+    "xmldom": "^0.1.27",
+    "botbuilder-lg": "https://botbuilder.myget.org/F/botbuilder-declarative/npm/botbuilder-lg/-/4.6.6.tgz"
   },
   "devDependencies": {
     "@commitlint/cli": "7.0.0",
