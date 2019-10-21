@@ -23,6 +23,7 @@ import { ConversationLearner } from '../ConversationLearner'
 import { CLState } from '../Memory/CLState'
 import { CLRecognizerResult } from '../CLRecognizeResult'
 import { TemplateProvider } from '../TemplateProvider'
+import { TemplateProviderLG } from '../TemplateProviderLG'
 import { CLStrings } from '../CLStrings';
 import { UIMode } from '../Memory/BotState';
 
@@ -201,6 +202,7 @@ export const getRouter = (client: CLClient, options: ICLClientOptions): express.
 
             const callbacks = Object.values(clRunner.callbacks).map(clRunner.convertInternalCallbackToCallback)
             const templates = TemplateProvider.GetTemplates()
+            const templatesLG = TemplateProviderLG.GetTemplates()
 
             const botInfo: CLM.BotInfo = {
                 user: {
@@ -211,6 +213,7 @@ export const getRouter = (client: CLClient, options: ICLClientOptions): express.
                 },
                 callbacks,
                 templates,
+                templatesLG,
                 checksum: clRunner.botChecksum(),
                 validationError: validationError,
                 banner: banner

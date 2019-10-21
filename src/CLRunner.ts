@@ -12,6 +12,7 @@ import { CLDebug, DebugType } from './CLDebug'
 import { CLClient } from './CLClient'
 import { CLStrings } from './CLStrings'
 import { TemplateProvider } from './TemplateProvider'
+import { TemplateProviderLG } from './TemplateProviderLG'
 import { ReadOnlyClientMemoryManager, ClientMemoryManager } from './Memory/ClientMemoryManager'
 import { CLRecognizerResult } from './CLRecognizeResult'
 import { ConversationLearner } from './ConversationLearner'
@@ -180,7 +181,9 @@ export class CLRunner {
         if (!this.checksum) {
             const callbacks = Object.values(this.callbacks).map(this.convertInternalCallbackToCallback)
             const templates = TemplateProvider.GetTemplates()
+            const templatesLG = TemplateProviderLG.GetTemplates()
             this.checksum = Utils.botChecksum(callbacks, templates)
+            this.checksum = Utils.botChecksum(callbacks, templatesLG)
         }
         return this.checksum
     }
@@ -1384,6 +1387,33 @@ export class CLRunner {
             return msg
         }
     }
+
+
+    public async TakeLGAction(LGAction: CLM.LGAction, filledEntityMap: CLM.FilledEntityMap): Promise<Partial<BB.Activity> | string> {
+        try {
+            const entityDisplayValues = CLM.getEntityDisplayValueMap(filledEntityMap)
+            const renderedArguments = LGAction.renderArguments(entityDisplayValues)
+
+            const missingEntities = renderedArguments.filter(ra => ra.value === null);
+            if (missingEntities.length > 0) {
+                return `ERROR: Missing Entity value(s) for ${missingEntities.map(me => me.parameter).join(', ')}`;
+            }
+
+            const form = await TemplateProviderLG.RenderTemplate(LGAction.templateName, renderedArguments)
+
+            if (form == null) {
+                return CLDebug.Error(`Missing Template: ${LGAction.templateName}`)
+            }
+            const attachment = BB.CardFactory.LG(form)
+            const message = BB.MessageFactory.attachment(attachment)
+            message.text = undefined
+            return message
+        } catch (error) {
+            let msg = CLDebug.Error(error, 'Card Template or arguments are invalid. Unable to render template')
+            return msg
+        }
+    }
+
 
     private async TakeSessionAction(sessionAction: CLM.SessionAction, filledEntityIdMap: CLM.FilledEntityMap, inTeach: boolean, state: CLState, sessionId: string | null, app: CLM.AppBase | null): Promise<Partial<BB.Activity> | null> {
 

@@ -4,100 +4,105 @@
  */
 
 import { TemplateEngine } from 'botbuilder-lg';
-import { Template } from '@conversationlearner/models'
+import { Template, RenderedActionArgument } from '@conversationlearner/models'
 
-class RenderedActionArgument {
-    parameter: string;
-    value: string | null;
-}
+// class RenderedActionArgument {
+//     parameter: string;
+//     value: string | null;
+// }
 
-function GetTemplate(): Template[] {
 
-    let templates: Template[] = []
+export class TemplateProviderLG {
 
-    templates.push({
-        name: "greeting",
-        variables: [],
-        body: "",
-        validationError: null
-    })
+    public static GetTemplates(): Template[] {
 
-    templates.push({
-        name: "askName",
-        variables: [],
-        body: "",
-        validationError: null
-    })
+        let templates: Template[] = []
 
-    templates.push({
-        name: "askColor",
-        variables: [{ key: "userName", type: "string" }],
-        body: "",
-        validationError: null
-    })
+        templates.push({
+            name: "greeting",
+            variables: [],
+            body: "",
+            validationError: null
+        })
 
-    templates.push({
-        name: "colorResponse",
-        variables: [{ key: "userName", type: "string" }, { key: "color", type: "string" }],
-        body: "",
-        validationError: null
-    })
+        templates.push({
+            name: "askName",
+            variables: [],
+            body: "",
+            validationError: null
+        })
 
-    return templates
-}
+        templates.push({
+            name: "askColor",
+            variables: [{ key: "userName", type: "string" }],
+            body: "",
+            validationError: null
+        })
 
-/* function GetArgumentNames(formString: string) {
-    // Get set of unique entities
-    let mustaches = formString.match(/{{\s*[\w\.]+\s*}}/g)
-    if (mustaches) {
-        let entities = [...new Set(mustaches.map(x => x.match(/[\w\.]+/)![0]))]
-        return entities
-    }
-    return []
-} */
+        templates.push({
+            name: "colorResponse",
+            variables: [{ key: "userName", type: "string" }, { key: "color", type: "string" }],
+            body: "",
+            validationError: null
+        })
 
-function RemoveEmptyArguments(formString: string) {
-    return formString.replace(/{{\s*[\w\.]+\s*}}/g, '')
-}
-
-function RenderTemplate(lg_filename: string, templateArguments: RenderedActionArgument[]) {
-    let engine = new TemplateEngine().addFile(lg_filename);
-    let template = GetTemplate()
-    if (template === null) {
-        return null
+        return templates
     }
 
-    let templateString = JSON.stringify(template)
-    //let argumentNames = GetArgumentNames(templateString)
-    let argumentNames = new Array()
-    for (var i = 0; i < template.length; i++) {
-        argumentNames[i] = template[i].name;
-    }
-    console.log(argumentNames)
-
-    for (let argumentName of argumentNames) {
-        let renderedActionArgument = templateArguments.find(a => a.parameter == argumentName)
-        if (renderedActionArgument) {
-            //console.log(renderedActionArgument);
-            renderedActionArgument.value = engine.evaluateTemplate(renderedActionArgument.parameter);
-            console.log(">>>>>");
-            console.log(renderedActionArgument.value);
-            templateString = templateString.replace(new RegExp(`{{${argumentName}}}`, 'g'), renderedActionArgument.value || '')
+    /* function GetArgumentNames(formString: string) {
+        // Get set of unique entities
+        let mustaches = formString.match(/{{\s*[\w\.]+\s*}}/g)
+        if (mustaches) {
+            let entities = [...new Set(mustaches.map(x => x.match(/[\w\.]+/)![0]))]
+            return entities
         }
+        return []
+    } */
+
+    public static RemoveEmptyArguments(formString: string) {
+        return formString.replace(/{{\s*[\w\.]+\s*}}/g, '')
     }
-    templateString = RemoveEmptyArguments(templateString)
-    return JSON.parse(templateString)
+
+    public static async RenderTemplate(lg_filename: string, templateArguments: RenderedActionArgument[]): Promise<any | null> {
+
+        let engine = new TemplateEngine().addFile(lg_filename);
+        let template = this.GetTemplates()
+        if (template === null) {
+            return null
+        }
+
+        let templateString = JSON.stringify(template)
+        //let argumentNames = GetArgumentNames(templateString)
+        let argumentNames = new Array()
+        for (var i = 0; i < template.length; i++) {
+            argumentNames[i] = template[i].name;
+        }
+        console.log(argumentNames)
+
+        for (let argumentName of argumentNames) {
+            let renderedActionArgument = templateArguments.find(a => a.parameter == argumentName)
+            if (renderedActionArgument) {
+                //console.log(renderedActionArgument);
+                renderedActionArgument.value = engine.evaluateTemplate(renderedActionArgument.parameter);
+                console.log(renderedActionArgument.value);
+                templateString = templateString.replace(new RegExp(`{{${argumentName}}}`, 'g'), renderedActionArgument.value || '')
+            }
+        }
+        templateString = this.RemoveEmptyArguments(templateString)
+        return JSON.parse(templateString)
+    }
+
 }
 
 
-let lg_filename = `${__dirname}/tem.lg`;
-console.log(lg_filename)
+// let lg_filename = `${__dirname}/tem.lg`;
+// console.log(lg_filename)
 
-let templateArguments = new Array();
-var temparg = new RenderedActionArgument();
-temparg.parameter = "colorResponse";
-temparg.value = "";
+// let templateArguments = new Array();
+// var temparg = new RenderedActionArgument();
+// temparg.parameter = "colorResponse";
+// temparg.value = "";
 
-templateArguments[0] = temparg;
+// templateArguments[0] = temparg;
 
-let result = RenderTemplate(lg_filename, templateArguments);
+// let result = RenderTemplate(lg_filename, templateArguments);
