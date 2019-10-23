@@ -202,7 +202,6 @@ export const getRouter = (client: CLClient, options: ICLClientOptions): express.
 
             const callbacks = Object.values(clRunner.callbacks).map(clRunner.convertInternalCallbackToCallback)
             const templates = TemplateProvider.GetTemplates()
-            const templatesLG = TemplateProviderLG.GetTemplates()
 
             const botInfo: CLM.BotInfo = {
                 user: {
@@ -213,7 +212,6 @@ export const getRouter = (client: CLClient, options: ICLClientOptions): express.
                 },
                 callbacks,
                 templates,
-                templatesLG,
                 checksum: clRunner.botChecksum(),
                 validationError: validationError,
                 banner: banner

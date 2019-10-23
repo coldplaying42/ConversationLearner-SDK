@@ -181,9 +181,7 @@ export class CLRunner {
         if (!this.checksum) {
             const callbacks = Object.values(this.callbacks).map(this.convertInternalCallbackToCallback)
             const templates = TemplateProvider.GetTemplates()
-            const templatesLG = TemplateProviderLG.GetTemplates()
             this.checksum = Utils.botChecksum(callbacks, templates)
-            this.checksum = Utils.botChecksum(callbacks, templatesLG)
         }
         return this.checksum
     }
@@ -1399,17 +1397,18 @@ export class CLRunner {
                 return `ERROR: Missing Entity value(s) for ${missingEntities.map(me => me.parameter).join(', ')}`;
             }
 
-            const form = await TemplateProviderLG.RenderTemplate(LGAction.templateName, renderedArguments)
+            const form = await TemplateProviderLG.RenderTemplate(LGAction.lgName, renderedArguments)
 
             if (form == null) {
                 return CLDebug.Error(`Missing Template: ${LGAction.templateName}`)
             }
+            //todo
             const attachment = BB.CardFactory.LG(form)
             const message = BB.MessageFactory.attachment(attachment)
             message.text = undefined
             return message
         } catch (error) {
-            let msg = CLDebug.Error(error, 'Card Template or arguments are invalid. Unable to render template')
+            let msg = CLDebug.Error(error, 'LG Template or arguments are invalid. Unable to render template')
             return msg
         }
     }
