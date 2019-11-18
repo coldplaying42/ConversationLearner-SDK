@@ -201,7 +201,7 @@ export class CLRunner {
     }
 
     public async InTrainingUI(turnContext: BB.TurnContext): Promise<boolean> {
-        if (turnContext.activity.from?.name === Utils.CL_DEVELOPER) {
+        if (turnContext.activity.from ?.name === Utils.CL_DEVELOPER) {
             const state = CLState.GetFromContext(turnContext, this.configModelId)
             const app = await state.BotState.GetApp()
             // If no app selected in UI or no app set in config, or they don't match return true
@@ -401,7 +401,7 @@ export class CLRunner {
         if (ConversationLearner.logStorage) {
             // For self-hosted storage logDialogId is sessionId
             const logDialogId = sessionId
-            const predictedAction = scoreResponse.scoredActions[0]?.actionId ?? ""
+            const predictedAction = scoreResponse.scoredActions[0] ?.actionId ?? ""
 
             // Keep only needed data (drop payload, etc)
             const scoredActions = scoreResponse.scoredActions.map(sa => {
@@ -484,12 +484,12 @@ export class CLRunner {
         const conversationReference = BB.TurnContext.getConversationReference(activity)
 
         // Validate request
-        if (activity.from?.id === undefined) {
+        if (activity.from ?.id === undefined) {
             throw new Error(`Attempted to get current session for user, but user was not defined on bot request.`)
         }
 
         try {
-            const inEditingUI = conversationReference.user?.name === Utils.CL_DEVELOPER
+            const inEditingUI = conversationReference.user ?.name === Utils.CL_DEVELOPER
 
             // Validate setup
             if (!inEditingUI && !this.configModelId) {
@@ -498,7 +498,7 @@ export class CLRunner {
                 return null
             }
 
-            if (!ConversationLearner.options?.LUIS_AUTHORING_KEY) {
+            if (!ConversationLearner.options ?.LUIS_AUTHORING_KEY) {
                 const msg = 'Options must specify luisAuthoringKey.  Set the LUIS_AUTHORING_KEY.\n\n'
                 CLDebug.Error(msg)
                 return null
@@ -995,7 +995,7 @@ export class CLRunner {
             if (uiMode === UIMode.TEST) {
                 placeHolderFilledEntities = testAPIResults
             }
-            else if (uiTrainScorerStep?.trainScorerStep.logicResult) {
+            else if (uiTrainScorerStep ?.trainScorerStep.logicResult) {
                 placeHolderFilledEntities = uiTrainScorerStep.trainScorerStep.logicResult.changedFilledEntities
             }
 
@@ -1336,7 +1336,7 @@ export class CLRunner {
                 throw new Error(`Set Entity Action: ${action.actionId} referenced entity ${entity.entityName} but it is not an ENUM. Please update the action to reference the correct entity.`)
             }
 
-            const enumValueObj = entity.enumValues?.find(ev => ev.enumValueId === action.enumValueId)
+            const enumValueObj = entity.enumValues ?.find(ev => ev.enumValueId === action.enumValueId)
             if (!enumValueObj) {
                 throw new Error(`Set Entity Action: ${action.actionId} which sets: ${entity.entityName} could not find the value with id: ${action.enumValueId}`)
             }
@@ -1561,15 +1561,14 @@ export class CLRunner {
                 return `ERROR: Missing Entity value(s) for ${missingEntities.map(me => me.parameter).join(', ')}`
             }
 
-            const form = await TemplateProvider.RenderTemplate(cardAction.templateName, renderedArguments)
+            let tempString = await TemplateProvider.RenderTemplate(cardAction.templateName, renderedArguments)
 
-            if (form == null) {
-                return CLDebug.Error(`Missing Template: ${cardAction.templateName}`)
+            if (tempString == null) {
+                return CLDebug.Error(`Missing template`)
             }
-            const attachment = BB.CardFactory.adaptiveCard(form)
-            const message = BB.MessageFactory.attachment(attachment)
-            message.text = undefined
-            return message
+
+            return tempString
+
         } catch (error) {
             let msg = CLDebug.Error(error, 'Card Template or arguments are invalid. Unable to render template')
             return msg
@@ -1660,7 +1659,7 @@ export class CLRunner {
 
         for (let round of trainDialog.rounds) {
             let userText = round.extractorStep.textVariations[0].text
-            let filledEntities = round.scorerSteps[0]?.input?.filledEntities ?? []
+            let filledEntities = round.scorerSteps[0] ?.input ?.filledEntities ?? []
 
             // Check that entities exist
             for (let filledEntity of filledEntities) {
@@ -1746,7 +1745,7 @@ export class CLRunner {
                 }
                 else {
                     const filledEntity = filledEntityMap.map[entity.entityName]
-                    if (filledEntity?.values.length === 0) {
+                    if (filledEntity ?.values.length === 0) {
                         missingEntities.push(entity.entityName)
                     }
                 }
@@ -1780,7 +1779,7 @@ export class CLRunner {
      */
     public async ReplayTrainDialogLogic(trainDialog: CLM.TrainDialog, state: CLState, cleanse: boolean): Promise<CLM.TrainDialog> {
 
-        if (!trainDialog?.rounds) {
+        if (!trainDialog ?.rounds) {
             return trainDialog
         }
 
@@ -2005,7 +2004,7 @@ export class CLRunner {
         if (scoreIndex > 0) {
             const lastScoredAction = round.scorerSteps[scoreIndex - 1].labelAction
             let lastAction = actions.find(a => a.actionId == lastScoredAction)
-            if (lastAction?.isTerminal) {
+            if (lastAction ?.isTerminal) {
                 replayError = new CLM.ReplayErrorActionAfterWait()
                 replayErrors.push(replayError)
             }
@@ -2026,7 +2025,7 @@ export class CLRunner {
         let entityList: CLM.EntityList = { entities }
         let prevMemories: CLM.Memory[] = []
 
-        if (!trainDialog?.rounds) {
+        if (!trainDialog ?.rounds) {
             return null
         }
 
@@ -2044,7 +2043,7 @@ export class CLRunner {
         for (let [roundIndex, round] of trainDialog.rounds.entries()) {
 
             // Use entities from first scorer step
-            const filledEntities = round.scorerSteps[0]?.input?.filledEntities ?? []
+            const filledEntities = round.scorerSteps[0] ?.input ?.filledEntities ?? []
 
             // Validate scorer step
             replayError = this.GetTrainDialogRoundErrors(round, roundIndex, curAction, trainDialog, entities, filledEntities, replayErrors)
