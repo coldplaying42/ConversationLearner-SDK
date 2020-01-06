@@ -15,7 +15,6 @@ export class TemplateProvider {
     public static LGTemplateDirectory(): string {
         //TODO - make this configurable
         let templateDirectory = path.join(process.cwd(), './lgs')
-
         // Try up a directory or two as could be in /lib or /dist folder depending on deployment
         if (!fs.existsSync(templateDirectory)) {
             templateDirectory = path.join(process.cwd(), '../lgs')
@@ -28,12 +27,14 @@ export class TemplateProvider {
 
     // TODO: Decouple template renderer from types from Action classes
     // E.g. use generic key,value object instead of RenderedActionArgument
-    public static async RenderTemplate(templateName: string, templateArguments: RenderedActionArgument[]): Promise<any | null> {
+    public static async RenderTemplate(templateName: string, templateArguments: RenderedActionArgument[], entityDisplayValues: Map<string, string>): Promise<any | null> {
+
         let entities = {}
 
         for (let templateArgument of templateArguments) {
             entities[templateArgument.parameter] = templateArgument.value
         }
+        entityDisplayValues.forEach((value: string, key: string) => { entities[key] = value });
 
         let templateDirectory = this.LGTemplateDirectory()
         let lgFilename = templateDirectory + "//" + templateName + ".lg";
@@ -52,13 +53,23 @@ export class TemplateProvider {
         for (let file of files) {
             const fileName = path.join(this.LGTemplateDirectory(), `${file}.lg`)
             let engine = new TemplateEngine().addFile(fileName);
-            let templateBody = ""
+            let templateBody = ''
+            if (file.includes('AdaptiveCard')) {
+                templateBody = engine.templates[1].body
+                templateBody = templateBody.replace("- ```\r\n", "").replace("```", "")
+                for (let symbol of engine.templates[1].parameters) {
+                    let sourceText = '@{' + symbol + '}'
+                    let replaceText = '{{' + symbol + '}}'
+                    templateBody = templateBody.replace(sourceText, replaceText)
+                }
+            }
+
             let validationError = this.hasSubmitError
                 ? `Template "${file}" has an "Action.Submit" item but no data.  Submit item must be of the form: "type": "Action.Submit", "data": string` : null
 
             let tvs: TemplateVariable[] = []
             for (let par of engine.templates[0].parameters) {
-                //Here type could be change
+                //Here type could be changed
                 let tv: TemplateVariable = { key: par, type: 'lg' }
                 tvs.push(tv)
             }
@@ -71,6 +82,7 @@ export class TemplateProvider {
             }
             templates.push(template)
         }
+
         return templates
     }
 

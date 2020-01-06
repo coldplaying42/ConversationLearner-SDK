@@ -1561,13 +1561,13 @@ export class CLRunner {
                 return `ERROR: Missing Entity value(s) for ${missingEntities.map(me => me.parameter).join(', ')}`
             }
 
-            let tempString = await TemplateProvider.RenderTemplate(cardAction.templateName, renderedArguments)
+            let activity = await TemplateProvider.RenderTemplate(cardAction.templateName, renderedArguments, entityDisplayValues)
 
-            if (tempString == null) {
+            if (activity == null) {
                 return CLDebug.Error(`Missing template`)
             }
 
-            return tempString
+            return activity
 
         } catch (error) {
             let msg = CLDebug.Error(error, 'Card Template or arguments are invalid. Unable to render template')

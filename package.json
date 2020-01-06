@@ -46,7 +46,7 @@
     "async-file": "^2.0.2",
     "body-parser": "1.18.3",
     "botbuilder": "4.4.0",
-    "botbuilder-lg": "^4.7.0-preview.90328",
+    "botbuilder-lg": "^4.7.0-preview",
     "cors": "2.8.4",
     "express": "4.16.3",
     "filenamify": "^2.0.0",
